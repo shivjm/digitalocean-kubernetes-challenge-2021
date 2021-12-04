@@ -1,0 +1,21 @@
+repositories:
+  - name: "kyverno"
+    url: "https://kyverno.github.io/kyverno/"
+
+helmDefaults:
+  cleanupOnFail: true
+  wait: true
+  waitForJobs: true
+
+releases:
+  - chart: "kyverno/kyverno"
+    name: "kyverno"
+    namespace: "kyverno"
+    version: "v2.1.3"
+  - chart: "kyverno/kyverno-policies"
+    name: "kyverno-policies"
+    namespace: "kyverno"
+    version: "v2.1.3"
+    disableValidationOnInstall: true
+    needs:
+      - "kyverno/kyverno"
