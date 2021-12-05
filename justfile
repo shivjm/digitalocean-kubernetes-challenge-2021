@@ -28,7 +28,7 @@ wait-for-kyverno:
     echo "Waiting for Kyverno to be ready..."
     while :
     do
-      if silence=`kubectl logs -n kyverno deployment/kyverno 2>&1 | grep -q "ready to serve admission requests"`; then
+      if silence=`(kubectl logs -n kyverno deployment/kyverno 2>&1; true) | grep -q "ready to serve admission requests"`; then
         break
       fi
       echo "."
