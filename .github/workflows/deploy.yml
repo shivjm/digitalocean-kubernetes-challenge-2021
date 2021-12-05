@@ -1,0 +1,25 @@
+name: Deploy to production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: GitHub Action for DigitalOcean - doctl
+        uses: digitalocean/action-doctl@v2.1.0
+        with:
+          token: ${{ secrets.DO_TOKEN }}
+      - name: Save kubeconfig
+        run: |
+          doctl kubernetes cluster kubeconfig save ${{ secrets.DO_CLUSTER_ID }}
+      - uses: actions/checkout@v2
+      - name: Helm & Helmfile Action
+        uses: hiberbee/github-action-helm@1.9.1
+        with:
+          helmfile: apply
+          plugins: diff
