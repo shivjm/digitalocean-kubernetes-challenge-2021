@@ -1,0 +1,17 @@
+name: Create Cluster
+
+on: pull_request
+
+jobs:
+  create-cluster:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.2.0
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Helm & Helmfile Action
+        uses: hiberbee/github-action-helm@1.9.1
+        with:
+          helmfile: apply
+          plugins: diff
