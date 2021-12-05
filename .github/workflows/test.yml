@@ -15,3 +15,8 @@ jobs:
         with:
           helmfile: apply
           plugins: diff
+      - name: Setup just
+        uses: extractions/setup-just@v1
+      - name: Run tests
+        run: |
+          just test

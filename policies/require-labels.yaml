@@ -1,0 +1,29 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-labels
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+    - name: check-for-labels
+      match:
+        resources:
+          kinds:
+            - Deployment
+            - StatefulSet
+      preconditions:
+        - key: "{{ request.operation }}"
+          operator: Equals
+          value: CREATE
+      validate:
+        message: 'The label `digitalocean.com/challenge` must be equal to `"2021"`.'
+        pattern:
+          metadata:
+            labels:
+              digitalocean.com/challenge: "2021"
+      exclude:
+        resources:
+          namespaces:
+            - "kube-system"
+            - kyverno
