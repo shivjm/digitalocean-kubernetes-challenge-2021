@@ -1,0 +1,24 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-registries
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+    - name: validate-registries
+      match:
+        resources:
+          kinds:
+            - Pod
+      validate:
+        message: "Images must come from DOCR."
+        pattern:
+          spec:
+            containers:
+              - image: "registry.digitalocean.com/*"
+      exclude:
+        resources:
+          namespaces:
+            - "kube-system"
+            - kyverno
