@@ -1,4 +1,4 @@
-test: test-valid test-invalid
+test: wait-for-kyverno install-policies test-valid test-invalid
 
 test-invalid: (test-files "invalid" "0" "rejected")
 
@@ -20,6 +20,20 @@ test-files directory expected label:
     done
 
     [[ $FAILED -eq 0 ]] || exit 1
+
+wait-for-kyverno:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    echo "Waiting for Kyverno to be ready..."
+    while :
+    do
+      if silence=`kubectl logs -n kyverno deployment/kyverno 2>&1 | grep -q "ready to serve admission requests"`; then
+        break
+      fi
+      echo "."
+      sleep 1
+    done
 
 install-kyverno:
     helmfile apply

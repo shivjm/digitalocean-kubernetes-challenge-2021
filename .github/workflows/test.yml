@@ -17,12 +17,6 @@ jobs:
           plugins: diff
       - name: Setup just
         uses: extractions/setup-just@v1
-      - name: Install policies
-        run: |
-          just install-policies
-      - name: Randomly try to install deployments
-        run: |
-          kubectl apply -f tests/invalid/deployment-without-labels.yaml
       - name: Run tests
         run: |
           just test
