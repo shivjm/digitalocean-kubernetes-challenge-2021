@@ -15,3 +15,33 @@ jobs:
         with:
           helmfile: apply
           plugins: diff
+      # Kyverno is installed
+      - name: Install policies
+        run: |
+          kubectl apply -f policies
+      - name: Make sure invalid resources cannot be installed
+        run: |
+          let FAILED=0
+          for f in tests/invalid/*.yaml; do
+            if (kubectl apply -f $f 2>&1 > /dev/null); then
+              echo "ERROR: $f should have been rejected"
+              let FAILED=1
+            fi
+
+            kubectl delete -f $f --ignore-not-found 2>&1 > /dev/null
+          done
+
+          [[ $FAILED -ne 0 ]] && exit 1
+      - name: Make sure valid resources can be installed
+        run: |
+          let FAILED=0
+          for f in tests/valid/*.yaml; do
+            if ! (kubectl apply -f $f 2>&1 > /dev/null); then
+              echo "ERROR: $f should have been accepted"
+              let FAILED=1
+            fi
+
+            kubectl delete -f $f --ignore-not-found 2>&1 > /dev/null
+          done
+
+          [[ $FAILED -ne 0 ]] && exit 1
